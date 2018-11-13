@@ -16,6 +16,7 @@
     <allow-intent href="mailto:*" />
     <allow-intent href="geo:*" />
     <allow-navigation href="*" />
+    <preference name="deployment-target" value="11.0" />
     <platform name="android">
         <allow-intent href="market:*" />
     </platform>
@@ -38,5 +39,6 @@
         <variable name="ANDROID_HOST" value=" " />
         <variable name="ANDROID_PATHPREFIX" value="/" />
     </plugin>
+    <plugin name="cordova-plugin-airgap-secure-storage" spec="git+ssh://git@github.com:aeternity/cordova-plugin-airgap-secure-storage.git#promisify" />
     <plugin name="cordova-plugin-qrscanner" spec="^2.6.0" />
 </widget>
