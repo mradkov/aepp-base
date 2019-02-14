@@ -1,32 +1,14 @@
 language: node_js
 os:
   - linux
-  - osx
 node_js:
   - '8'
-cache:
-  directories:
-    - node_modules
-    - platforms
-    - plugins
-    - /home/travis/.cache/Cypress
-before_install:
-  - npm i -g npm@6.1.0
-install:
-  - travis_wait scripts/install.sh
-script:
-  - if [[ $TRAVIS_OS_NAME != "osx" ]]; then npm test; fi
-before_deploy: scripts/before-deploy.sh
+install: true
+script: true
+before_deploy: true
 deploy:
   - provider: script
     skip_cleanup: true
     script: scripts/deploy.sh
     on:
       all_branches: true
-  - provider: releases
-    api_key: $GITHUB_TOKEN
-    file: aeternity.app.tar.gz
-    skip_cleanup: true
-    on:
-      condition: $TRAVIS_OS_NAME = osx
-      tags: true
