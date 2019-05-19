@@ -12,18 +12,36 @@ RUN apt-get update && \
                        imagemagick &&\
     curl -sL https://nodejs.org/dist/v${NODEJS_VERSION}/node-v${NODEJS_VERSION}-linux-x64.tar.gz | tar xz --strip-components=1 &&\
     rm -rf /var/lib/apt/lists/*
+RUN chmod 777 /usr/local/android-sdk-linux -R
+
+ARG user=jenkins
+ARG group=jenkins
+ARG uid=10000
+ARG gid=10000
+
+ENV HOME /home/${user}
+RUN groupadd -g ${gid} ${group}
+RUN useradd -c "Jenkins user" -d $HOME -u ${uid} -g ${gid} -m ${user}
+
+ARG VERSION=3.20
+ARG AGENT_WORKDIR=/home/${user}/agent
+
+RUN curl --create-dirs -sSLo /usr/share/jenkins/slave.jar https://repo.jenkins-ci.org/public/org/jenkins-ci/main/remoting/${VERSION}/remoting-${VERSION}.jar \
+  && chmod 755 /usr/share/jenkins \
+  && chmod 644 /usr/share/jenkins/slave.jar
+
+USER ${user}
+ENV AGENT_WORKDIR=${AGENT_WORKDIR}
+RUN mkdir /home/${user}/.jenkins && mkdir -p ${AGENT_WORKDIR}
+
+VOLUME /home/${user}/.jenkins
+VOLUME ${AGENT_WORKDIR}
+WORKDIR /home/${user}
+RUN chmod 777 /home/${user} -R
 
 ENV GRADLE_OPTS=${GRADLE_OPTS}\ -Dorg.gradle.daemon=false
 
 RUN mkdir app
-WORKDIR /app
+WORKDIR /home/${user}/app
 
-COPY package*.json ./
-RUN npm install && npx cordova telemetry off
-
-# As cordova changes global modules when adding a platform, we have to build the apk already during the docker build process
-COPY . .
-RUN npm run build:cordova
-RUN npx cordova prepare android
-RUN npm run gen:cordova-resources
-RUN npx cordova build android -- --gradleArg=--no-daemon
+ADD . .

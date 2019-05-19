@@ -9,10 +9,21 @@ pipeline {
   }
 
   stages {
+    stage('Build') {
+      steps {
+        withCredentials([usernamePassword(
+          credentialsId: 'github-jsnewby-userpass',
+          usernameVariable: 'GIT_USERNAME',
+          passwordVariable: 'GIT_PASSWORD')]) {
+            timeout(time: 30, unit: 'MINUTES') {
+              sh 'scripts/build-android.sh'
+            }
+        }
+      }
+    }
     stage('Archive Artifacts') {
       steps {
-        sh 'cp /app/platforms/android/app/build/outputs/apk/debug/app-debug.apk $WORKSPACE/android-debug.apk'
-        archiveArtifacts artifacts: 'android-debug.apk', fingerprint: true
+        archiveArtifacts artifacts: 'platforms/android/build/outputs/apk/debug/android-debug.apk', fingerprint: true
       }
     }
   }
