@@ -17,36 +17,43 @@ describe('prefixedAmount', () => {
 
   it('generates proper values', () => {
     const t = BigNumber(`0.${'123456789'.repeat(3)}`).shiftedBy(-MAGNITUDE);
+    // show 6 digits after decimal point instead of 8
+    // preserve pico/giga prefixes
+    // add cosmetic commas
+
+    // try to implement:
+    // user's balance: don't use approximate sign
+    // amount of tokens to send and transaction fee: use approximate sign
     [
-      '0.00000012 Pico',
+      '0.00000012 Pico', // ~0.00000012 Pico
       '0.00000123 Pico',
       '0.00001235 Pico',
       '0.00012346 Pico',
       '0.00123457 Pico',
       '0.01234568 Pico',
-      '0.12345679 Pico',
+      '0.12345679 Pico', // ~0.12345679 Pico
       '1.23456789 Pico',
       '12.3456789 Pico',
       '123.456789 Pico',
       '1234.56789 Pico',
-      '12345.6789 Pico',
-      '123456.789 Pico',
-      '0.00000123',
+      '12345.6789 Pico', // ~12345.? Pico
+      '123456.789 Pico', // ~123456 Pico
+      '0.00000123', // ~0.000001
       '0.00001235',
       '0.00012346',
       '0.00123457',
-      '0.01234568',
+      '0.01234568', // ~0.012345
       '0.12345679',
       '1.23456789',
       '12.3456789',
-      '123.456789',
-      '1234.56789',
+      '123.456789', // ~123.456
+      '1234.56789', // start to use cosmetic commas 1,234.56789
       '12345.6789',
       '123456.789',
       '1234567.89',
       '12345678.9',
-      '123456789',
-      '1.23456789 Giga',
+      '123456789', // ~123,456,789
+      '1.23456789 Giga', // 1,234,567,891
       '12.3456789 Giga',
       '123.456789 Giga',
       '1234.56789 Giga',
