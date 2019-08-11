@@ -24,6 +24,5 @@
     ],
     "theme_color": "#f7296e",
     "background_color": "#ffffff",
-    "display": "standalone",
     "start_url": "/"
 }
