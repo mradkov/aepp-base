@@ -45,6 +45,7 @@
 </template>
 
 <script>
+import { handleUnknownError } from '../../lib/utils';
 import MobilePage from './Page.vue';
 import Guide from '../Guide.vue';
 import AeButton from '../AeButton.vue';
@@ -71,6 +72,7 @@ export default {
         await this.$store.dispatch('accounts/hdWallet/deriveAndCheckPasswordKey', this.password);
         this.resolve();
       } catch (e) {
+        handleUnknownError(e);
         this.wrongPassword = true;
       }
     },

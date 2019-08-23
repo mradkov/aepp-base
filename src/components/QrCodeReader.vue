@@ -25,6 +25,7 @@
 
 <script>
 import { BrowserQRCodeReader } from '@zxing/library/esm5/browser/BrowserQRCodeReader';
+import { handleUnknownError } from '../lib/utils';
 import HeaderMobile from './mobile/Header.vue';
 
 export default {
@@ -71,6 +72,7 @@ export default {
       mediaStream.getTracks().forEach(track => track.stop());
       this.cameraAllowed = true;
     } catch (e) {
+      handleUnknownError(e);
       this.cameraAllowed = false;
     }
   },

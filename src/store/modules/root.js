@@ -4,6 +4,7 @@ import Vue from 'vue';
 import { update, flatMap, mergeWith } from 'lodash-es';
 import store from '../index'; // eslint-disable-line import/no-cycle
 import networksRegistry, { defaultNetwork } from '../../lib/networksRegistry';
+import { handleUnknownError } from '../../lib/utils';
 import { genRandomBuffer } from '../utils';
 
 export default {
@@ -153,6 +154,7 @@ export default {
         manifest.fetchedAt = new Date().toJSON();
         return manifest;
       } catch (e) {
+        handleUnknownError(e);
         return {};
       }
     },

@@ -3,6 +3,8 @@
 </template>
 
 <script>
+import { handleUnknownError } from '../../lib/utils';
+
 export default {
   async mounted() {
     let data;
@@ -22,6 +24,7 @@ export default {
           title: this.$t('remote-connection.settings.new.title'),
         });
       } catch (e) {
+        handleUnknownError(e);
         this.$router.push({ name: 'settings-remote-connection' });
         return;
       }
