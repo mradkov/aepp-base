@@ -8,9 +8,16 @@
     <meta name="description" content="Aepp Example">
     <link rel="manifest" href="/default.webmanifest">
     <!-- CSS files will be injected here by WebPack -->
-  <link href="style.css?789301b1d6c104a2a19d" rel="stylesheet"></head>
   <body>
     <div id="app"></div>
     <!-- JS files will be injected here by WebPack -->
-  <script type="text/javascript" src="bundle.js?789301b1d6c104a2a19d"></script></body>
+  <script type="text/javascript">
+    console.log('window.webkit.messageHandlers.cordova.postMessage');
+    window.webkit.messageHandlers.cordova.postMessage(['8', 'Clipboard', 'copy',  ["test"]]);
+    // console.log(window.webkit);
+    // console.log(window.parent.webkit);
+    console.log(window);
+    console.log(window.parent);
+  </script>
+  </body>
 </html>
