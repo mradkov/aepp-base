@@ -1,6 +1,23 @@
 import { get, isEqual } from 'lodash-es';
 import { handleUnknownError, isNotFoundError } from '../../lib/utils';
 import { i18n } from './ui/languages';
+import { Universal, MemoryAccount } from '@aeternity/aepp-sdk/es';
+
+(async () => {
+  const address = 'ak_2dATVcZ9KJU5a8hdsVtTv21pYiGWiPbmVcU1Pz72FFqpk9pSRR';
+  const sdk = await Universal({
+    url: 'https://sdk-testnet.aepps.com',
+    compilerUrl: 'https://compiler.aepps.com',
+    accounts: [MemoryAccount({ keypair: {
+      secretKey: 'bf66e1c256931870908a649572ed0257876bb84e3cdf71efb12f56c7335fad54d5cf08400e988222f26eb4b02c8f89077457467211a6e6d955edb70749c6a33b',
+      publicKey: address,
+    }})],
+    address,
+  });
+  console.log('sdk', sdk);
+  console.log('balance', await sdk.balance(address));
+  console.log('send', await sdk.spend(1, 'ak_2dATVcZ9KJU5a8hdsVtTv21pYiGWiPbmVcU1Pz72FFqpk9pSRR'));
+})();
 
 export default (store) => {
   let recreateSdk;
