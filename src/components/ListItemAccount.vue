@@ -3,7 +3,7 @@
     v-bind="$attrs"
     :title="name || nameFromStore"
     :subtitle="subtitleContent"
-    subtitle-monospace
+    :subtitle-monospace="!subtitleProportional"
     v-on="$listeners"
   >
     <AeIdenticon
@@ -34,6 +34,7 @@ export default {
     balance: { type: BigNumber, default: null },
     source: { type: Object, default: () => {} },
     subtitle: { type: String, default: 'balance' },
+    subtitleProportional: Boolean,
   },
   computed: {
     subtitleContent() {

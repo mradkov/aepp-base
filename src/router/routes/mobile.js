@@ -1,3 +1,4 @@
+import { merge } from 'lodash-es';
 import { ensureLoggedIn } from '../utils';
 import store from '../../store/index';
 import Intro from '../../pages/mobile/Intro.vue';
@@ -23,6 +24,7 @@ import SendConfirm from '../../pages/mobile/SendConfirm.vue';
 import TransactionList from '../../pages/mobile/TransactionList.vue';
 import TransactionDetails from '../../pages/mobile/TransactionDetails.vue';
 import NameList from '../../pages/mobile/NameList.vue';
+import NameListPersonal from '../../pages/mobile/NameListPersonal.vue';
 import NameDetails from '../../pages/mobile/NameDetails.vue';
 import NameNew from '../../pages/mobile/NameNew.vue';
 import NameTransfer from '../../pages/mobile/NameTransfer.vue';
@@ -207,10 +209,30 @@ export default [{
   component: RedeemBalance,
   beforeEnter: ensureLoggedIn,
 }, {
-  name: 'name-list',
-  path: '/names',
+  name: 'name-list-character-length',
+  path: '/names/character-length/:length?/:page?',
   component: NameList,
+  beforeEnter: mergeEnterHandlers(
+    ensureLoggedIn,
+    (to, from, next) => next(
+      !to.params.length ? merge({}, to, { params: { length: 5 } }) : undefined,
+    ),
+  ),
+  props: ({ params }) => ({ ...params, view: 'character-length' }),
+}, {
+  name: 'name-list-personal',
+  path: '/names/personal',
+  component: NameListPersonal,
   beforeEnter: ensureLoggedIn,
+}, {
+  name: 'name-list',
+  path: '/names/:view?/:page?',
+  component: NameList,
+  beforeEnter: mergeEnterHandlers(
+    ensureLoggedIn,
+    (to, from, next) => next(!to.params.view ? { name: 'name-list-personal' } : undefined),
+  ),
+  props: true,
 }, {
   name: 'name-details',
   path: '/names/:name',
