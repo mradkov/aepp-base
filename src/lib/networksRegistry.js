@@ -26,4 +26,9 @@ export default Object.freeze((process.env.NODE_ENV === 'production' ? [
   defaultNetwork,
   genNetwork('Unstable'),
   genNetwork('Edgenet', pick(defaultNetwork, ['middlewareUrl'])),
+  {
+    name: 'aeternal.io',
+    url: 'https://aeternal.io',
+    middlewareUrl: 'https://aeternal.io',
+  },
 ]).map(Object.freeze));
