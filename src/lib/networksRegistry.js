@@ -21,14 +21,14 @@ export const defaultNetwork = genNetwork('Fortuna-net', {
 export default Object.freeze((process.env.NODE_ENV === 'production' ? [
   defaultNetwork,
   genNetwork('Testnet'),
-] : [
-  genNetwork('Testnet'),
-  defaultNetwork,
-  genNetwork('Unstable'),
-  genNetwork('Edgenet', pick(defaultNetwork, ['middlewareUrl'])),
   {
     name: 'aeternal.io',
     url: 'https://aeternal.io',
     middlewareUrl: 'https://aeternal.io',
   },
+] : [
+  genNetwork('Testnet'),
+  defaultNetwork,
+  genNetwork('Unstable'),
+  genNetwork('Edgenet', pick(defaultNetwork, ['middlewareUrl'])),
 ]).map(Object.freeze));
