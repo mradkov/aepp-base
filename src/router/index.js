@@ -1,4 +1,5 @@
 import Router from 'vue-router';
+import { pick } from 'lodash-es';
 import store from '../store';
 
 store.subscribe((mutation, state) => {
@@ -40,6 +41,12 @@ export default (async () => {
         if (process.env.IS_MOBILE_DEVICE || store.state.loginTarget) {
           router.push(store.state.loginTarget || { name: 'transfer' });
           store.commit('setLoginTarget');
+        }
+        if (process.env.IS_CORDOVA) {
+          window.universalLinks.subscribe(
+            'handleDeeplinkUrl',
+            d => router.push(Object.values(pick(new URL(d.url), ['pathname', 'search'])).join('')),
+          );
         }
       } else {
         const { fullPath } = router.currentRoute;

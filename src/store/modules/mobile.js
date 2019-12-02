@@ -11,6 +11,7 @@ export default {
     nameListRouteParams: null,
     readSecurityCourses: [],
     skipAddingToHomeScreen: false,
+    deeplinkUrl: null,
   },
 
   getters: {
@@ -49,6 +50,9 @@ export default {
     },
     skipAddingToHomeScreen(state) {
       state.skipAddingToHomeScreen = true;
+    },
+    addDeeplinkUrl(state, url) {
+      state.deeplinkUrl = url;
     },
   },
 

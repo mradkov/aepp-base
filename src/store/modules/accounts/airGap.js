@@ -5,6 +5,7 @@ import { getDesktopRemoveSignAction } from './utils';
 import {
   getPublicKeyByResponseUrl, getSignedTransactionByResponseUrl, generateSignRequestUrl,
 } from '../../../lib/airGap';
+import { registerDeeplinkHandler } from '../../../lib/deeplinkHandlers';
 import { i18n } from '../../plugins/ui/languages';
 
 const TRANSPORT_QR_CODE = 'qr-code';
@@ -58,8 +59,8 @@ export default {
           },
       ).start();
 
-      return new Promise((resolve) => {
-        window.handleOpenURL = url => resolve(url);
+      return new Promise((resolve, reject) => {
+        registerDeeplinkHandler(d => (d.params.pathMatch === 'airgap' ? resolve(d) : reject(d)), 'airGap');
       });
     },
 

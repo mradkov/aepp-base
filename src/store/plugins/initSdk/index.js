@@ -2,6 +2,7 @@ import { get, isEqual } from 'lodash-es';
 import { handleUnknownError, isNotFoundError, isInternalServerError } from '../../../lib/utils';
 import { fetchJson } from '../../utils';
 import { i18n } from '../ui/languages';
+import { registerDeeplinkHandler } from '../../../lib/deeplinkHandlers';
 
 export default (store) => {
   let recreateSdk;
@@ -110,7 +111,7 @@ export default (store) => {
           methods,
           deepConfiguration: { Ae: { methods: ['readQrCode', 'baseAppVersion', 'share', 'addressAndNetworkUrl'] } },
         },
-        PostMessageHandler, ...process.env.UNFINISHED_FEATURES ? [UrlSchemeHandler] : [],
+        PostMessageHandler, UrlSchemeHandler,
       )({
         url: network.url,
         internalUrl: network.url,
@@ -153,6 +154,15 @@ export default (store) => {
     ]);
     sdkActive = true;
     sdk.middleware = middleware.api;
+    registerDeeplinkHandler((d) => {
+      sdk.handleDeeplinkUrl.bind(sdk)(d);
+      if (process.env.IS_PWA) {
+        store.dispatch('modals/open', {
+          name: 'notification',
+          text: i18n.t('modal.deeplinks.return-to-browser'),
+        });
+      }
+    }, 'sdk');
     return sdk;
   };
 
