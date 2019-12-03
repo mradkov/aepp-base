@@ -74,6 +74,7 @@ import AeToolbarButton from './AeToolbarButton.vue';
 import { Card, Paste, Camera } from './icons';
 import AePopover from './AePopover.vue';
 import ListItemAccount from './ListItemAccount.vue';
+import { AENS_DOMAIN } from '../lib/constants';
 
 const ADDRESS_PREFIX = 'ak_';
 const FORMATTED_ADDRESS_REGEXP = /^ak_[1-9A-HJ-NP-Za-km-z ]+$/;
@@ -102,6 +103,7 @@ export default {
   data: () => ({
     showAccountsDropdown: false,
     clipboardReadSupported: process.env.IS_CORDOVA || navigator.clipboard,
+    AENS_DOMAIN,
   }),
   computed: mapState('names', {
     address(state, { getAddress }) {
@@ -131,12 +133,14 @@ export default {
     formatDisplayValue(value) {
       const name = Crypto.isAddressValid(value) && this.$store.getters['names/get'](value, false);
       if (name) return name;
+      if (value.endsWith(AENS_DOMAIN)) return value.slice(0, -6);
       if (value.startsWith(ADDRESS_PREFIX)) return this.formatAddress(value);
       return value;
     },
     formatEmitValue(value) {
       if (FORMATTED_ADDRESS_REGEXP.test(value)) return value.replace(/ /g, '');
-      return value;
+      if (value.startsWith(ADDRESS_PREFIX)) return value;
+      return value + AENS_DOMAIN;
     },
     setValue(newValue) {
       this.$children[0].$el.querySelector('textarea').value = newValue;
