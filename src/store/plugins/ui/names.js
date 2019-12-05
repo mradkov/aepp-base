@@ -1,5 +1,5 @@
 /* eslint no-param-reassign: ["error", { "ignorePropertyModificationsFor": ["state"] }] */
-import { update } from 'lodash-es';
+import { update, get } from 'lodash-es';
 import BigNumber from 'bignumber.js';
 import Vue from 'vue';
 import { Crypto } from '@aeternity/aepp-sdk/es';
@@ -13,12 +13,19 @@ export default (store) => {
     namespaced: true,
     state: {
       names: {},
+      defaults: get(store.state, 'names.defaults', {}),
       owned: null,
     },
     getters: {
-      get: ({ names }, getters, { accounts: { list } }, rootGetters) => (id, local = true) => {
-        store.dispatch('names/fetch', { id });
-        if (names[id].name) return names[id].name;
+      get: (
+        { names, defaults }, getters, { sdk, accounts: { list } }, rootGetters,
+      ) => (id, local = true) => {
+        let name;
+        if (defaults[id] && !sdk.then && defaults[id][sdk.getNetworkId()]) {
+          name = defaults[id][sdk.getNetworkId()];
+        }
+        store.dispatch('names/fetch', { id: name || id, nameAddress: name ? id : '' });
+        if (names[id] && names[id].name) return names[id].name;
         if (local) {
           const account = list.find(a => a.address === id);
           if (account) return rootGetters['accounts/getName'](account);
@@ -31,6 +38,9 @@ export default (store) => {
         if (names[id].address) return names[id].address;
         return '';
       },
+      getDefault: ({ defaults }, getters, { sdk }) => address => (
+        defaults[address] && defaults[address][sdk.getNetworkId()]
+      ),
       isPending: ({ owned }) => name => (
         !!((owned && owned.names.find(t => t.name === name)) || {}).pending
       ),
@@ -46,6 +56,10 @@ export default (store) => {
       },
       setOwned(state, owned) {
         state.owned = owned;
+      },
+      setDefault({ defaults }, { address, network, name }) {
+        if (!(defaults[address])) Vue.set(defaults, address, {});
+        Vue.set(defaults[address], network, name);
       },
       reset(state) {
         state.names = {};
@@ -63,7 +77,7 @@ export default (store) => {
       },
       async fetch({
         rootState, state, commit, dispatch,
-      }, { id, force }) {
+      }, { id, force, nameAddress = '' }) {
         if (!force && state.names[id]) return;
         commit('set', { key: id });
         const sdk = rootState.sdk.then ? await rootState.sdk : rootState.sdk;
@@ -82,12 +96,21 @@ export default (store) => {
             hash: nameEntry.nameHash,
           });
         } else if (isAensName(id)) {
-          const nameEntry = await sdk.api.getNameEntryByName(id);
-          commit('set', {
-            address: getAddressByNameEntry(nameEntry),
-            name: id,
-            hash: nameEntry.id,
-          });
+          let address;
+          try {
+            const nameEntry = await sdk.api.getNameEntryByName(id);
+            address = getAddressByNameEntry(nameEntry);
+            commit('set', { address, name: id, hash: nameEntry.id });
+          } catch (e) {
+            if (!isAccountNotFoundError(e)) handleUnknownError(e);
+          }
+          if (nameAddress) {
+            commit('setDefault', {
+              network: sdk.getNetworkId(),
+              address: nameAddress,
+              name: address ? id : '',
+            });
+          }
         } else {
           throw new Error(`Unknown id: ${id}`);
         }
@@ -140,6 +163,9 @@ export default (store) => {
             nameFee: BigNumber(tx.nameFee).shiftedBy(-MAGNITUDE),
           })),
         };
+      },
+      chooseDefault({ rootState: { sdk }, commit }, { name, address }) {
+        commit('setDefault', { name, address, network: sdk.getNetworkId() });
       },
       async updatePointer({
         rootState: { sdk }, state, commit, dispatch,
