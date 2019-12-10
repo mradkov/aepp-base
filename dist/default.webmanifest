@@ -7,6 +7,11 @@
             "type": "image/svg"
         }
     ],
+    "aeternity_network_ids": ["ae_mainnet", "ae_uat"],
+    "description": "Example æpp description. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.",
+    "categories": ["finance"],
+    "author": "Denis Davidyuk",
+    "author_url": "https://github.com/davidyuk",
     "theme_color": "#008afc",
     "background_color": "#ffffff",
     "display": "standalone",
